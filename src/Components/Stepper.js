@@ -19,14 +19,14 @@ import MuiAlert from "@mui/material/Alert";
 import DatosEmpresa from "./Steps/DatosEmpresa";
 import Pasajeros from "./Steps/Pasajeros";
 import Descargar from "./Steps/Descargar";
-import { postDDJJARG1, postDDJJPY, downloadQR } from "../Api/ddjj.api";
-// import { saveAs } from "file-saver";
+import { postDDJJARG1, postDDJJPY } from "../Api/ddjj.api";
+import { saveAs } from "file-saver";
 
 const steps = ["Datos Empresa", "Pasajeros", "Descargar"];
 
-// const saveFile = (url, dni, apellido, nombre) => {
-//   saveAs(url, `qrpy-${dni}-${apellido} ${nombre}.png`);
-// };
+const saveFile = (url, dni, apellido, nombre) => {
+  saveAs(url, `qrpy-${dni}-${apellido} ${nombre}.png`);
+};
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -177,16 +177,7 @@ const StepperView = () => {
         msg: resPY.msg,
       });
 
-      const urlQRPY = await downloadQR(resPY.qrLink);
-
-      if (urlQRPY) {
-        setUrlQR({
-          link: urlQRPY,
-          filename: `qrpy-${dni}-${apellido} ${nombre}.png`
-        });
-      }
-
-      // saveFile(resPY.qrLink, dni, apellido, nombre);
+      saveFile(resPY.qrLink, dni, apellido, nombre);
     } catch (error) {
       console.log(error);
       setOpenAlert({
