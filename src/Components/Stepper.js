@@ -1,33 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import moment from 'moment';
-import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Toolbar from '@mui/material/Toolbar';
-import Paper from '@mui/material/Paper';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useMediaQuery } from '@mui/material';
-import Stack from '@mui/material/Stack';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import DatosEmpresa from './Steps/DatosEmpresa';
-import Pasajeros from './Steps/Pasajeros';
-import Descargar from './Steps/Descargar';
-import { postDDJJ, deleteQR } from '../Api/ddjj.api';
+import React, { useState, useEffect } from "react";
+import moment from "moment";
+import CssBaseline from "@mui/material/CssBaseline";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Toolbar from "@mui/material/Toolbar";
+import Paper from "@mui/material/Paper";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useMediaQuery } from "@mui/material";
+import Stack from "@mui/material/Stack";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+import DatosEmpresa from "./Steps/DatosEmpresa";
+import Pasajeros from "./Steps/Pasajeros";
+import Descargar from "./Steps/Descargar";
+import { postDDJJ, deleteQR } from "../Api/ddjj.api";
 
-const steps = ['Datos Empresa', 'Pasajeros', 'Descargar'];
+const steps = ["Datos Empresa", "Pasajeros", "Descargar"];
 
-const Alert = React.forwardRef(function Alert(
-  props,
-  ref,
-) {
-  return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />;
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 const getStepContent = (
@@ -67,7 +64,7 @@ const getStepContent = (
     case 2:
       return <Descargar />;
     default:
-      throw new Error('Unknown step');
+      throw new Error("Unknown step");
   }
 };
 
@@ -75,46 +72,46 @@ const theme = createTheme();
 
 const StepperView = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const isDesktop = useMediaQuery('(min-width:900px)');
+  const isDesktop = useMediaQuery("(min-width:900px)");
   const [showCamera, setShowCamera] = useState(!isDesktop);
   const [openAlert, setOpenAlert] = useState({
     type: null,
-    msg: ''
+    msg: "",
   });
   const [datos, setDatos] = useState({
     empresa: {
-      razonsocial: '',
-      nombreCortoTransporte: '',
+      razonsocial: "",
+      nombreCortoTransporte: "",
       // nombreLargoTransporte: '',
-      nombreDueñoEmpresa: '',
-      calle: '',
-      nroCalle: '',
-      ciudad: '',
-      emailEmpresa: '',
-      telEmpresa: '',
-      telDueñoEmpresa: '',
+      nombreDueñoEmpresa: "",
+      calle: "",
+      nroCalle: "",
+      ciudad: "",
+      emailEmpresa: "",
+      telEmpresa: "",
+      telDueñoEmpresa: "",
       fechaPartida: moment().valueOf(),
     },
     pasajero: {
-      apellido: '',
-      nombre: '',
+      apellido: "",
+      nombre: "",
       fechaNacimiento: moment().valueOf(),
       fechaEmision: moment().valueOf(),
-      dni: '',
-      edad: '',
-      sexo: '',
-      tipoVacuna: '',
-      esquemaVacuna: '',
-      terceraVacuna: '',
+      dni: "",
+      edad: "",
+      sexo: "",
+      tipoVacuna: "",
+      esquemaVacuna: "",
+      terceraVacuna: "",
     },
   });
 
   const [stopStream, setStopStream] = useState(false);
 
   const handleUpdate = (err, result) => {
-    if (datos.pasajero.apellido === '' && datos.pasajero.nombre === '') {
+    if (datos.pasajero.apellido === "" && datos.pasajero.nombre === "") {
       if (result) {
-        const datosDni = result.text.split('@');
+        const datosDni = result.text.split("@");
         setDatos({
           ...datos,
           pasajero: {
@@ -123,17 +120,17 @@ const StepperView = () => {
             nombre: datosDni[2],
             sexo: datosDni[3],
             dni: datosDni[4],
-            fechaNacimiento: moment(datosDni[6], 'DD/MM/YYYY').valueOf(),
+            fechaNacimiento: moment(datosDni[6], "DD/MM/YYYY").valueOf(),
             edad: moment().diff(
-              moment(datosDni[6], 'DD/MM/YYYY'),
-              'years',
+              moment(datosDni[6], "DD/MM/YYYY"),
+              "years",
               false
             ),
-            fechaEmision: moment(datosDni[7], 'DD/MM/YYYY').valueOf(),
+            fechaEmision: moment(datosDni[7], "DD/MM/YYYY").valueOf(),
           },
         });
       } else {
-        console.log('Not Found');
+        console.log("Not Found");
       }
     }
   };
@@ -145,13 +142,13 @@ const StepperView = () => {
   };
 
   useEffect(() => {
-    if (localStorage.getItem('datosEmpresa')) {
+    if (localStorage.getItem("datosEmpresa")) {
       setDatos({
         ...datos,
-        empresa: JSON.parse(localStorage.getItem('datosEmpresa')),
+        empresa: JSON.parse(localStorage.getItem("datosEmpresa")),
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClickAgregarOtro = async () => {
@@ -160,30 +157,29 @@ const StepperView = () => {
     try {
       const respuesta = await postDDJJ(datos);
 
-      console.log('respuesta', respuesta);
+      setDatos({
+        ...datos,
+        pasajero: {
+          apellido: "",
+          nombre: "",
+          fechaEmision: moment().valueOf(),
+          dni: "",
+          edad: "",
+          sexo: "",
+          tipoVacuna: "",
+          esquemaVacuna: "",
+          terceraVacuna: "",
+        },
+      });
+      console.log("respuesta", respuesta);
       //TODO: CONFIGURAR ALERTA
     } catch (error) {
-      console.log(error)
+      console.log(error);
       setOpenAlert({
-        type: 'error',
-        msg: error.response?.data?.msg
+        type: "error",
+        msg: error.response?.data?.msg,
       });
     }
-
-    setDatos({
-      ...datos,
-      pasajero: {
-        apellido: '',
-        nombre: '',
-        fechaEmision: moment().valueOf(),
-        dni: '',
-        edad: '',
-        sexo: '',
-        tipoVacuna: '',
-        esquemaVacuna: '',
-        terceraVacuna: '',
-      },
-    });
   };
 
   const handleFinish = async () => {
@@ -197,7 +193,7 @@ const StepperView = () => {
 
   const handleNext = async () => {
     if (activeStep === 0) {
-      localStorage.setItem('datosEmpresa', JSON.stringify(datos.empresa));
+      localStorage.setItem("datosEmpresa", JSON.stringify(datos.empresa));
     } else if (activeStep === 1) {
       // localStorage.setItem('datosPasajero', JSON.stringify(datos.empresa));
       dismissQrReader();
@@ -205,31 +201,29 @@ const StepperView = () => {
       try {
         const respuesta = await postDDJJ(datos);
 
-        console.log('respuesta', respuesta);
+        setDatos({
+          ...datos,
+          pasajero: {
+            apellido: "",
+            nombre: "",
+            fechaEmision: moment().valueOf(),
+            dni: "",
+            sexo: "",
+            edad: "",
+            tipoVacuna: "",
+            esquemaVacuna: "",
+            terceraVacuna: "",
+          },
+        });
+        console.log("respuesta", respuesta);
         //TODO: CONFIGURAR ALERTA
       } catch (error) {
-        console.log(error)
+        console.log(error);
         setOpenAlert({
-          type: 'error',
-          msg: error.response?.data?.msg
+          type: "error",
+          msg: error.response?.data?.msg,
         });
       }
-
-
-      setDatos({
-        ...datos,
-        pasajero: {
-          apellido: '',
-          nombre: '',
-          fechaEmision: moment().valueOf(),
-          dni: '',
-          sexo: '',
-          edad: '',
-          tipoVacuna: '',
-          esquemaVacuna: '',
-          terceraVacuna: '',
-        },
-      });
     }
     setActiveStep(activeStep + 1);
   };
@@ -261,7 +255,7 @@ const StepperView = () => {
   };
 
   const handleChangeDateEmit = (e, dateInput) => {
-    if (dateInput === 'emision') {
+    if (dateInput === "emision") {
       setDatos({
         ...datos,
         pasajero: { ...datos.pasajero, fechaEmision: e.utc() },
@@ -272,7 +266,7 @@ const StepperView = () => {
         pasajero: {
           ...datos.pasajero,
           fechaNacimiento: e.utc(),
-          edad: moment().diff(e, 'years', false),
+          edad: moment().diff(e, "years", false),
         },
       });
     }
@@ -281,7 +275,7 @@ const StepperView = () => {
   const handleCloseAlert = () => {
     setOpenAlert({
       type: null,
-      msg: ''
+      msg: "",
     });
   };
 
@@ -289,26 +283,26 @@ const StepperView = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AppBar
-        position='absolute'
-        color='default'
+        position="absolute"
+        color="default"
         elevation={0}
         sx={{
-          position: 'relative',
+          position: "relative",
           borderBottom: (t) => `1px solid ${t.palette.divider}`,
         }}
       >
         <Toolbar>
-          <Typography variant='h6' color='inherit' noWrap>
+          <Typography variant="h6" color="inherit" noWrap>
             AutoDDJJ
           </Typography>
         </Toolbar>
       </AppBar>
-      <Container component='main' maxWidth='sm' sx={{ mb: 4 }}>
+      <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
         <Paper
-          variant='outlined'
+          variant="outlined"
           sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
         >
-          <Typography component='h1' variant='h4' align='center'>
+          <Typography component="h1" variant="h4" align="center">
             URBANO
           </Typography>
           <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
@@ -321,10 +315,10 @@ const StepperView = () => {
           <React.Fragment>
             {activeStep === steps.length ? (
               <React.Fragment>
-                <Typography variant='h5' gutterBottom>
+                <Typography variant="h5" gutterBottom>
                   Proceso completado
                 </Typography>
-                <Typography variant='subtitle1'>
+                <Typography variant="subtitle1">
                   Recargue para comenzar denuevo
                 </Typography>
               </React.Fragment>
@@ -342,7 +336,7 @@ const StepperView = () => {
                   showCamera,
                   setShowCamera
                 )}
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                   {activeStep !== 0 && (
                     <Button onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
                       Atras
@@ -352,7 +346,7 @@ const StepperView = () => {
                   {activeStep === 1 && (
                     <Button
                       onClick={handleClickAgregarOtro}
-                      variant='contained'
+                      variant="contained"
                       sx={{ mt: 3, ml: 1 }}
                     >
                       Agregar Otro
@@ -361,7 +355,7 @@ const StepperView = () => {
 
                   {activeStep !== steps.length - 1 ? (
                     <Button
-                      variant='contained'
+                      variant="contained"
                       onClick={handleNext}
                       sx={{ mt: 3, ml: 1 }}
                     >
@@ -369,7 +363,7 @@ const StepperView = () => {
                     </Button>
                   ) : (
                     <Button
-                      variant='contained'
+                      variant="contained"
                       onClick={handleFinish}
                       sx={{ mt: 3, ml: 1 }}
                     >
@@ -381,14 +375,18 @@ const StepperView = () => {
             )}
           </React.Fragment>
         </Paper>
-        <Stack spacing={2} sx={{ width: '100%' }}>
-          <Snackbar open={openAlert.type !== null} autoHideDuration={4000} onClose={handleCloseAlert}>
+        <Stack spacing={2} sx={{ width: "100%" }}>
+          <Snackbar
+            open={openAlert.type !== null}
+            autoHideDuration={4000}
+            onClose={handleCloseAlert}
+          >
             <Alert
               onClose={handleCloseAlert}
-              severity={openAlert.type || 'warning'}
-              sx={{ width: '100%' }}
+              severity={openAlert.type || "warning"}
+              sx={{ width: "100%" }}
             >
-              {openAlert.msg || ''}
+              {openAlert.msg || ""}
             </Alert>
           </Snackbar>
         </Stack>
