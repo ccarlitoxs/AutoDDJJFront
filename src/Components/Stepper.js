@@ -20,13 +20,13 @@ import DatosEmpresa from "./Steps/DatosEmpresa";
 import Pasajeros from "./Steps/Pasajeros";
 import Descargar from "./Steps/Descargar";
 import { postDDJJARG1, postDDJJPY } from "../Api/ddjj.api";
-// import { saveAs } from "file-saver";
+import { saveAs } from "file-saver";
 
 const steps = ["Datos Empresa", "Pasajeros", "Descargar"];
 
-// const saveFile = (url, dni, apellido, nombre) => {
-//   saveAs(url, `qrpy-${dni}-${apellido} ${nombre}.png`);
-// };
+const saveFile = (url, dni, apellido, nombre) => {
+  saveAs(url, `qrpy-${dni}-${apellido} ${nombre}.png`);
+};
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -161,7 +161,7 @@ const StepperView = () => {
   }, []);
 
   const handlePY = async () => {
-    // const {dni,apellido,nombre} = datos.pasajero;
+    const {dni,apellido,nombre} = datos.pasajero;
 
     try {
       const resPY = await postDDJJPY(datos);
@@ -170,9 +170,8 @@ const StepperView = () => {
         type: "success",
         msg: resPY.msg,
       });
-      //TODO: CONFIGURAR save file
-      // saveFile(resPY.qrLink,dni,apellido,nombre);
-      console.log("respuestaPY", resPY);
+
+      saveFile(resPY.qrLink,dni,apellido,nombre);
     } catch (error) {
       console.log(error);
       setOpenAlert({
