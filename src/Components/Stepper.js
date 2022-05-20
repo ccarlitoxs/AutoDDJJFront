@@ -19,7 +19,7 @@ import MuiAlert from "@mui/material/Alert";
 import DatosEmpresa from "./Steps/DatosEmpresa";
 import Pasajeros from "./Steps/Pasajeros";
 import Descargar from "./Steps/Descargar";
-import { postDDJJ } from "../Api/ddjj.api";
+import { postDDJJARG1, postDDJJPY } from "../Api/ddjj.api";
 // import { saveAs } from "file-saver";
 
 const steps = ["Datos Empresa", "Pasajeros", "Descargar"];
@@ -39,6 +39,8 @@ const getStepContent = (
   handleChangeDate,
   handleChangeDateEmit,
   handleUpdate,
+  handlePY,
+  handleARG1,
   dismissQrReader,
   stopStream,
   showCamera,
@@ -64,6 +66,8 @@ const getStepContent = (
           stopStream={stopStream}
           showCamera={showCamera}
           setShowCamera={setShowCamera}
+          handlePY={handlePY}
+          handleARG1={handleARG1}
         />
       );
     case 2:
@@ -156,79 +160,19 @@ const StepperView = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleClickAgregarOtro = async () => {
-    setShowCamera(!isDesktop);
-
+  const handlePY = async () => {
     // const {dni,apellido,nombre} = datos.pasajero;
 
     try {
-      const { resPY, resArg1 } = await postDDJJ(datos);
+      const resPY = await postDDJJPY(datos);
 
-      if (resPY && resArg1) {
-        let canSetDatos = true;
-
-        if (resPY.status === 200) {
-          setOpenAlert({
-            type: "success",
-            msg: resPY.msg,
-          });
-        } else {
-          canSetDatos = false;
-          setOpenAlert({
-            type: "error",
-            msg: resPY.msg,
-          });
-        }
-
-        if (resArg1.status === 200) {
-          setOpenAlert({
-            type: "success",
-            msg: resArg1.msg,
-          });
-        } else {
-          canSetDatos = false;
-          setOpenAlert({
-            type: "error",
-            msg: resArg1.msg,
-          });
-        }
-
-        if (canSetDatos) {
-          setDatos({
-            ...datos,
-            pasajero: {
-              apellido: "",
-              nombre: "",
-              fechaEmision: moment().valueOf(),
-              dni: "",
-              sexo: "",
-              edad: "",
-              tipoVacuna: "",
-              esquemaVacuna: "",
-              terceraVacuna: "",
-            },
-          });
-        }
-      }
-
-      //TODO: CONFIGURAR save file
-      // saveFile(url,dni,apellido,nombre);
-      console.log("respuesta", { resPY, resArg1 });
-
-      setDatos({
-        ...datos,
-        pasajero: {
-          apellido: "",
-          nombre: "",
-          fechaEmision: moment().valueOf(),
-          dni: "",
-          edad: "",
-          sexo: "",
-          tipoVacuna: "",
-          esquemaVacuna: "",
-          terceraVacuna: "",
-        },
+      setOpenAlert({
+        type: "success",
+        msg: resPY.msg,
       });
+      //TODO: CONFIGURAR save file
+      // saveFile(resPY.qrLink,dni,apellido,nombre);
+      console.log("respuestaPY", resPY);
     } catch (error) {
       console.log(error);
       setOpenAlert({
@@ -236,6 +180,43 @@ const StepperView = () => {
         msg: error.response?.data?.msg,
       });
     }
+  };
+
+  const handleARG1 = async () => {
+    try {
+      const resArg1 = await postDDJJARG1(datos);
+
+      setOpenAlert({
+        type: "success",
+        msg: resArg1.msg,
+      });
+      console.log("respuestaARG1", resArg1);
+    } catch (error) {
+      console.log(error);
+      setOpenAlert({
+        type: "error",
+        msg: error.response?.data?.msg,
+      });
+    }
+  };
+
+  const handleClickAgregarOtro = async () => {
+    setShowCamera(!isDesktop);
+
+    setDatos({
+      ...datos,
+      pasajero: {
+        apellido: "",
+        nombre: "",
+        fechaEmision: moment().valueOf(),
+        dni: "",
+        edad: "",
+        sexo: "",
+        tipoVacuna: "",
+        esquemaVacuna: "",
+        terceraVacuna: "",
+      },
+    });
   };
 
   const handleFinish = async () => {
@@ -254,83 +235,20 @@ const StepperView = () => {
       // localStorage.setItem('datosPasajero', JSON.stringify(datos.empresa));
       dismissQrReader();
 
-      // const {dni,apellido,nombre} = datos.pasajero;
-
-      try {
-        const { resPY, resArg1 } = await postDDJJ(datos);
-
-        if (resPY && resArg1) {
-          let canSetDatos = true;
-
-          if (resPY.status === 200) {
-            setOpenAlert({
-              type: "success",
-              msg: resPY.msg,
-            });
-          } else {
-            canSetDatos = false;
-            setOpenAlert({
-              type: "error",
-              msg: resPY.msg,
-            });
-          }
-
-          if (resArg1.status === 200) {
-            setOpenAlert({
-              type: "success",
-              msg: resArg1.msg,
-            });
-          } else {
-            canSetDatos = false;
-            setOpenAlert({
-              type: "error",
-              msg: resArg1.msg,
-            });
-          }
-
-          if (canSetDatos) {
-            setDatos({
-              ...datos,
-              pasajero: {
-                apellido: "",
-                nombre: "",
-                fechaEmision: moment().valueOf(),
-                dni: "",
-                sexo: "",
-                edad: "",
-                tipoVacuna: "",
-                esquemaVacuna: "",
-                terceraVacuna: "",
-              },
-            });
-          }
-        }
-
-        //TODO: CONFIGURAR save file
-        // saveFile(url,dni,apellido,nombre);
-        console.log("respuesta", { resPY, resArg1 });
-
-        setDatos({
-          ...datos,
-          pasajero: {
-            apellido: "",
-            nombre: "",
-            fechaEmision: moment().valueOf(),
-            dni: "",
-            edad: "",
-            sexo: "",
-            tipoVacuna: "",
-            esquemaVacuna: "",
-            terceraVacuna: "",
-          },
-        });
-      } catch (error) {
-        console.log(error);
-        setOpenAlert({
-          type: "error",
-          msg: error.response?.data?.msg,
-        });
-      }
+      setDatos({
+        ...datos,
+        pasajero: {
+          apellido: "",
+          nombre: "",
+          fechaEmision: moment().valueOf(),
+          dni: "",
+          edad: "",
+          sexo: "",
+          tipoVacuna: "",
+          esquemaVacuna: "",
+          terceraVacuna: "",
+        },
+      });
     }
     setActiveStep(activeStep + 1);
   };
@@ -439,6 +357,8 @@ const StepperView = () => {
                   handleChangeDateEmit,
                   handleUpdate,
                   dismissQrReader,
+                  handlePY,
+                  handleARG1,
                   stopStream,
                   showCamera,
                   setShowCamera

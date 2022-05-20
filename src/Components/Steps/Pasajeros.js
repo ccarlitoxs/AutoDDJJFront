@@ -21,6 +21,8 @@ const Pasajeros = ({
   handleChangeDate,
   dismissQrReader,
   handleUpdate,
+  handlePY,
+  handleARG1,
   stopStream,
   showCamera,
   setShowCamera,
@@ -43,10 +45,10 @@ const Pasajeros = ({
   }, [handleDevices]);
 
   const handleNextCam = () => {
-    if ((devices.length - 1) !== deviceCam) {
-      setDeviceCam(deviceCam + 1)
+    if (devices.length - 1 !== deviceCam) {
+      setDeviceCam(deviceCam + 1);
     } else {
-      setDeviceCam(0)
+      setDeviceCam(0);
     }
   };
 
@@ -70,7 +72,7 @@ const Pasajeros = ({
           </Grid>
         ) : (
           <Grid container spacing={1}>
-            <Grid item xs={(devices.length !== 1)?6:12}>
+            <Grid item xs={devices.length !== 1 ? 6 : 12}>
               <Button
                 variant="contained"
                 onClick={() => {
@@ -80,14 +82,13 @@ const Pasajeros = ({
                 Carga Manual
               </Button>
             </Grid>
-            {(devices.length !== 1)?<Grid item xs={6}>
-              <Button
-                variant="contained"
-                onClick={handleNextCam}
-              >
-                {`Cambiar Camara (${deviceCam})`}
-              </Button>
-            </Grid>:null}
+            {devices.length !== 1 ? (
+              <Grid item xs={6}>
+                <Button variant="contained" onClick={handleNextCam}>
+                  {`Cambiar Camara (${deviceCam})`}
+                </Button>
+              </Grid>
+            ) : null}
           </Grid>
         )
       ) : (
@@ -287,6 +288,16 @@ const Pasajeros = ({
               ))}
             </Select>
           </FormControl>
+        </Grid>
+        <Grid item xs={6}>
+          <Button variant="contained" onClick={handlePY} color='error'>
+            Enviar PY
+          </Button>
+        </Grid>
+        <Grid item xs={6}>
+          <Button variant="contained" onClick={handleARG1} color='error'>
+            Enviar ARG1
+          </Button>
         </Grid>
       </Grid>
     </React.Fragment>

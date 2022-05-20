@@ -1,9 +1,22 @@
 import axios from 'axios';
 
-export const postDDJJ = async (datos) => {
+export const postDDJJPY = async (datos) => {
   try {
     const { data } = await axios.post(
-      `${process.env.REACT_APP_BACKEND_SERVER}/api/ddjj`,
+      `${process.env.REACT_APP_BACKEND_SERVER}/api/ddjjpy`,
+      datos
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const postDDJJARG1 = async (datos) => {
+  try {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_BACKEND_SERVER}/api/ddjjarg1`,
       datos
     );
     return data;
