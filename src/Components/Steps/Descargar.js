@@ -7,7 +7,7 @@ import { saveAs } from "file-saver";
 const Descargar = () => {
   const saveFile = () => {
     saveAs(
-      `/api/downloadqr`,
+      `${process.env.REACT_APP_BACKEND_SERVER}/api/downloadqr`,
       "QR PY.zip"
     );
   };
