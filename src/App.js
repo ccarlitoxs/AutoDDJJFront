@@ -1,8 +1,8 @@
-import React from "react";
-import StepperView from "./Components/Stepper";
+import React from 'react';
+import StepperView from './Components/Stepper';
 
 const App = () => {
-  return <StepperView />;
+  return ( <StepperView />);
 };
 
 export default App;
