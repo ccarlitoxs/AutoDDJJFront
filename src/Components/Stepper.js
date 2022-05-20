@@ -199,24 +199,57 @@ const StepperView = () => {
       dismissQrReader();
 
       try {
-        const respuesta = await postDDJJ(datos);
+        const { resPY, resArg1 } = await postDDJJ(datos);
 
-        setDatos({
-          ...datos,
-          pasajero: {
-            apellido: "",
-            nombre: "",
-            fechaEmision: moment().valueOf(),
-            dni: "",
-            sexo: "",
-            edad: "",
-            tipoVacuna: "",
-            esquemaVacuna: "",
-            terceraVacuna: "",
-          },
-        });
-        console.log("respuesta", respuesta);
-        //TODO: CONFIGURAR ALERTA
+        if (resPY && resArg1) {
+          let canSetDatos = true;
+
+          if (resPY.status === 200) {
+            setOpenAlert({
+              type: "success",
+              msg: resPY.msg,
+            });
+          } else {
+            canSetDatos = false;
+            setOpenAlert({
+              type: "error",
+              msg: resPY.msg,
+            });
+          }
+
+          if (resArg1.status === 200) {
+            setOpenAlert({
+              type: "success",
+              msg: resArg1.msg,
+            });
+          } else {
+            canSetDatos = false;
+            setOpenAlert({
+              type: "error",
+              msg: resArg1.msg,
+            });
+          }
+
+          if (canSetDatos) {
+            setDatos({
+              ...datos,
+              pasajero: {
+                apellido: "",
+                nombre: "",
+                fechaEmision: moment().valueOf(),
+                dni: "",
+                sexo: "",
+                edad: "",
+                tipoVacuna: "",
+                esquemaVacuna: "",
+                terceraVacuna: "",
+              },
+            });
+          }
+        }
+
+        console.log("respuesta", resPY, resArg1);
+        
       } catch (error) {
         console.log(error);
         setOpenAlert({
