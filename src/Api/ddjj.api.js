@@ -37,3 +37,17 @@ export const deleteQR = async () => {
     throw error;
   }
 };
+
+export const downloadQR = async (url) => {
+  try {
+    const { data } = await axios({
+      url,
+      method: 'GET',
+      responseType: 'blob', // important
+    });
+    return window.URL.createObjectURL(new Blob([data]));
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};

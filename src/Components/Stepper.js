@@ -19,14 +19,14 @@ import MuiAlert from "@mui/material/Alert";
 import DatosEmpresa from "./Steps/DatosEmpresa";
 import Pasajeros from "./Steps/Pasajeros";
 import Descargar from "./Steps/Descargar";
-import { postDDJJARG1, postDDJJPY } from "../Api/ddjj.api";
-import { saveAs } from "file-saver";
+import { postDDJJARG1, postDDJJPY, downloadQR } from "../Api/ddjj.api";
+// import { saveAs } from "file-saver";
 
 const steps = ["Datos Empresa", "Pasajeros", "Descargar"];
 
-const saveFile = (url, dni, apellido, nombre) => {
-  saveAs(url, `qrpy-${dni}-${apellido} ${nombre}.png`);
-};
+// const saveFile = (url, dni, apellido, nombre) => {
+//   saveAs(url, `qrpy-${dni}-${apellido} ${nombre}.png`);
+// };
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -44,7 +44,9 @@ const getStepContent = (
   dismissQrReader,
   stopStream,
   showCamera,
-  setShowCamera
+  setShowCamera,
+  urlQR,
+  setUrlQR
 ) => {
   switch (step) {
     case 0:
@@ -68,6 +70,8 @@ const getStepContent = (
           setShowCamera={setShowCamera}
           handlePY={handlePY}
           handleARG1={handleARG1}
+          urlQR={urlQR}
+          setUrlQR={setUrlQR}
         />
       );
     case 2:
@@ -87,6 +91,8 @@ const StepperView = () => {
     type: null,
     msg: "",
   });
+  const [urlQR, setUrlQR] = useState(null);
+
   const [datos, setDatos] = useState({
     empresa: {
       razonsocial: "",
@@ -161,7 +167,7 @@ const StepperView = () => {
   }, []);
 
   const handlePY = async () => {
-    const {dni,apellido,nombre} = datos.pasajero;
+    const { dni, apellido, nombre } = datos.pasajero;
 
     try {
       const resPY = await postDDJJPY(datos);
@@ -171,7 +177,16 @@ const StepperView = () => {
         msg: resPY.msg,
       });
 
-      saveFile(resPY.qrLink,dni,apellido,nombre);
+      const urlQRPY = await downloadQR(resPY.qrLink);
+
+      if (urlQRPY) {
+        setUrlQR({
+          link: urlQRPY,
+          filename: `qrpy-${dni}-${apellido} ${nombre}.png`
+        });
+      }
+
+      // saveFile(resPY.qrLink, dni, apellido, nombre);
     } catch (error) {
       console.log(error);
       setOpenAlert({
@@ -201,6 +216,8 @@ const StepperView = () => {
 
   const handleClickAgregarOtro = async () => {
     setShowCamera(!isDesktop);
+
+    setUrlQR(null);
 
     setDatos({
       ...datos,
@@ -234,6 +251,7 @@ const StepperView = () => {
       // localStorage.setItem('datosPasajero', JSON.stringify(datos.empresa));
       dismissQrReader();
 
+      setUrlQR(null);
       setDatos({
         ...datos,
         pasajero: {
@@ -360,7 +378,9 @@ const StepperView = () => {
                   dismissQrReader,
                   stopStream,
                   showCamera,
-                  setShowCamera
+                  setShowCamera,
+                  urlQR,
+                  setUrlQR
                 )}
                 <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                   {activeStep !== 0 && (

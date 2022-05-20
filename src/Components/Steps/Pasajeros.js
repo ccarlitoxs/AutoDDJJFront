@@ -26,6 +26,8 @@ const Pasajeros = ({
   stopStream,
   showCamera,
   setShowCamera,
+  urlQR,
+  setUrlQR
 }) => {
   const [deviceCam, setDeviceCam] = useState(0);
   const [devices, setDevices] = useState([]);
@@ -289,12 +291,20 @@ const Pasajeros = ({
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <Button variant="contained" onClick={handlePY} color='error'>
             Enviar PY
           </Button>
         </Grid>
-        <Grid item xs={6}>
+        {(urlQR && urlQR.link && urlQR.filename)?
+        <Grid item xs={4}>
+          <a href={urlQR.link} download={urlQR.filename}>
+          <Button variant="contained" onClick={handlePY} color='error'>
+            Descargar QR
+          </Button>
+          </a>
+        </Grid>:null}
+        <Grid item xs={4}>
           <Button variant="contained" onClick={handleARG1} color='error'>
             Enviar ARG1
           </Button>
