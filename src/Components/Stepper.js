@@ -19,9 +19,17 @@ import MuiAlert from "@mui/material/Alert";
 import DatosEmpresa from "./Steps/DatosEmpresa";
 import Pasajeros from "./Steps/Pasajeros";
 import Descargar from "./Steps/Descargar";
-import { postDDJJ, deleteQR } from "../Api/ddjj.api";
+import { postDDJJ } from "../Api/ddjj.api";
+import { saveAs } from 'file-saver';
 
 const steps = ["Datos Empresa", "Pasajeros", "Descargar"];
+
+  const saveFile = (url,dni,apellido,nombre) => {
+    saveAs(
+      url,
+      `qrpy-${dni}-${apellido} ${nombre}.png`
+    );
+  };
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -154,8 +162,61 @@ const StepperView = () => {
   const handleClickAgregarOtro = async () => {
     setShowCamera(!isDesktop);
 
+    // const {dni,apellido,nombre} = datos.pasajero;
+
     try {
-      const respuesta = await postDDJJ(datos);
+      const { resPY, resArg1 } = await postDDJJ(datos);
+
+      if (resPY && resArg1) {
+        let canSetDatos = true;
+
+        if (resPY.status === 200) {
+          setOpenAlert({
+            type: "success",
+            msg: resPY.msg,
+          });
+        } else {
+          canSetDatos = false;
+          setOpenAlert({
+            type: "error",
+            msg: resPY.msg,
+          });
+        }
+
+        if (resArg1.status === 200) {
+          setOpenAlert({
+            type: "success",
+            msg: resArg1.msg,
+          });
+        } else {
+          canSetDatos = false;
+          setOpenAlert({
+            type: "error",
+            msg: resArg1.msg,
+          });
+        }
+
+        if (canSetDatos) {
+          setDatos({
+            ...datos,
+            pasajero: {
+              apellido: "",
+              nombre: "",
+              fechaEmision: moment().valueOf(),
+              dni: "",
+              sexo: "",
+              edad: "",
+              tipoVacuna: "",
+              esquemaVacuna: "",
+              terceraVacuna: "",
+            },
+          });
+        }
+      }
+
+      //TODO: CONFIGURAR save file
+      // saveFile(url,dni,apellido,nombre);
+      console.log("respuesta", { resPY, resArg1 } );
 
       setDatos({
         ...datos,
@@ -171,8 +232,7 @@ const StepperView = () => {
           terceraVacuna: "",
         },
       });
-      console.log("respuesta", respuesta);
-      //TODO: CONFIGURAR ALERTA
+      
     } catch (error) {
       console.log(error);
       setOpenAlert({
@@ -184,7 +244,7 @@ const StepperView = () => {
 
   const handleFinish = async () => {
     try {
-      await deleteQR();
+      // await deleteQR();
     } catch (error) {
       console.log(error);
     }
@@ -197,6 +257,8 @@ const StepperView = () => {
     } else if (activeStep === 1) {
       // localStorage.setItem('datosPasajero', JSON.stringify(datos.empresa));
       dismissQrReader();
+
+      // const {dni,apellido,nombre} = datos.pasajero;
 
       try {
         const { resPY, resArg1 } = await postDDJJ(datos);
@@ -248,8 +310,25 @@ const StepperView = () => {
           }
         }
 
-        console.log("respuesta", resPY, resArg1);
-        
+      //TODO: CONFIGURAR save file
+      // saveFile(url,dni,apellido,nombre);
+      console.log("respuesta", { resPY, resArg1 });
+
+      setDatos({
+        ...datos,
+        pasajero: {
+          apellido: "",
+          nombre: "",
+          fechaEmision: moment().valueOf(),
+          dni: "",
+          edad: "",
+          sexo: "",
+          tipoVacuna: "",
+          esquemaVacuna: "",
+          terceraVacuna: "",
+        },
+      });
+
       } catch (error) {
         console.log(error);
         setOpenAlert({
