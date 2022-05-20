@@ -356,9 +356,9 @@ const StepperView = () => {
                   handleChangeDate,
                   handleChangeDateEmit,
                   handleUpdate,
-                  dismissQrReader,
                   handlePY,
                   handleARG1,
+                  dismissQrReader,
                   stopStream,
                   showCamera,
                   setShowCamera
